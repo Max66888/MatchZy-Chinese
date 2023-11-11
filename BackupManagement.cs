@@ -56,7 +56,7 @@ namespace MatchZy
                     }
 
                 } else {
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{stopTeamName}{ChatColors.Default} wants to restore the game to the beginning of the current round. {ChatColors.Green}{remainingStopTeam}{ChatColors.Default}, please write !stop to confirm.");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{stopTeamName}{ChatColors.Default} 想要将游戏恢复到当前回合的开始. {ChatColors.Green}{remainingStopTeam}{ChatColors.Default}, 可输入 !stop 以同意.");
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace MatchZy
                 return;
             }
             Server.ExecuteCommand($"mp_backup_restore_load_file {fileName}");
-            Server.PrintToChatAll($"{chatPrefix} Backup file restored successfully: {fileName}");
+            Server.PrintToChatAll($"{chatPrefix} 备份文件回溯成功: {fileName}");
             if (pauseAfterRoundRestore) {
                 Server.ExecuteCommand("mp_pause_match;");
                 stopData["ct"] = false;
