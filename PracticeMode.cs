@@ -57,8 +57,8 @@ namespace MatchZy
                 Server.ExecuteCommand("""mp_t_default_grenades "weapon_molotov weapon_hegrenade weapon_smokegrenade weapon_flashbang weapon_decoy"; mp_t_default_primary "weapon_ak47"; mp_warmup_online_enabled "true"; mp_warmup_pausetimer "1"; mp_warmup_start; bot_quota_mode fill; mp_solid_teammates 2; mp_autoteambalance false; mp_teammates_are_enemies true;""");
             }
             GetSpawns();
-            Server.PrintToChatAll($"{chatPrefix} Practice mode loaded!");
-            Server.PrintToChatAll($"{chatPrefix} Available commands: .spawn, .ctspawn, .tspawn, .bot, .nobots, .exitprac");
+            Server.PrintToChatAll($"{chatPrefix} 训练模式已启动！！！");
+            Server.PrintToChatAll($"{chatPrefix} 可用命令: .spawn, .ctspawn, .tspawn, .bot, .nobots, .exitprac");
         }
 
         public void GetSpawns()
@@ -250,7 +250,7 @@ namespace MatchZy
                 }
             }
             if (!unusedBotFound) {
-                Server.PrintToChatAll($"{chatPrefix} Cannot add bots, the team is full! Use .nobots to remove the current bots.");
+                Server.PrintToChatAll($"{chatPrefix} 数量已满，无法加入Bot了! 使用 .nobots 来删除Bot.");
             }
         }
 
