@@ -106,10 +106,12 @@ namespace MatchZy
                 }
                 if (unreadyPlayers.Count > 0) {
                     string unreadyPlayerList = string.Join(", ", unreadyPlayers);
-                    Server.PrintToChatAll($"{chatPrefix} Unready players: {unreadyPlayerList}. Please type .ready to ready up! [Minimum ready players required: {ChatColors.Green}{minimumReadyRequired}{ChatColors.Default}]");
+                    Server.PrintToChatAll($"{chatPrefix} 未准备的玩家: {ChatColors.Purple}{unreadyPlayerList}{ChatColors.Default}.");
+                    Server.PrintToChatAll($"{chatPrefix} 请在公屏输入 {ChatColors.Green}.ready {ChatColors.Default}或{ChatColors.Green} .r {ChatColors.Default}以准备！[最低需要: {ChatColors.Green}{minimumReadyRequired}{ChatColors.Default}人]");
                 } else {
                     int countOfReadyPlayers = playerReadyStatus.Count(kv => kv.Value == true);
-                    Server.PrintToChatAll($"{chatPrefix} Minimum ready players required {ChatColors.Green}{minimumReadyRequired}{ChatColors.Default}, current ready players: {ChatColors.Green}{countOfReadyPlayers}{ChatColors.Default}");
+                    Server.PrintToChatAll($"{chatPrefix} 无法开始游戏！");
+                    Server.PrintToChatAll($"{chatPrefix} 最少需要玩家:{ChatColors.Red} {minimumReadyRequired} {ChatColors.Default} 人, 目前只有: {ChatColors.Green} {countOfReadyPlayers} {ChatColors.Default} 人");
                 }
             }
         }
@@ -118,15 +120,15 @@ namespace MatchZy
             if (isPaused && matchStarted) {
                 var pauseTeamName = unpauseData["pauseTeam"];
                 if ((string)pauseTeamName == "Admin") {
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}Admin{ChatColors.Default} has paused the match.");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}管理员{ChatColors.Default} 强制暂停了比赛.");
                 } else if ((string)pauseTeamName == "RoundRestore" && !(bool)unpauseData["t"] && !(bool)unpauseData["ct"]) {
-                    Server.PrintToChatAll($"{chatPrefix} Match has been paused because of Round Restore. Both teams need to type {ChatColors.Green}.unpause{ChatColors.Default} to unpause the match");
+                    Server.PrintToChatAll($"{chatPrefix} 比赛因回合回溯被暂停，准备好后双方需输入 {ChatColors.Green}.unpause{ChatColors.Default} 以继续比赛");
                 } else if ((bool)unpauseData["t"] && !(bool)unpauseData["ct"]) {
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default} wants to unpause the match. {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default}, please write !unpause to confirm.");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default} 想要取消比赛暂停. {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default}, 可输入 !unpause 以同意");
                 } else if (!(bool)unpauseData["t"] && (bool)unpauseData["ct"]) {
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default} wants to unpause the match. {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default}, please write !unpause to confirm.");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default} 想要取消比赛暂停. {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default}, 可输入 !unpause 以同意");
                 } else if (!(bool)unpauseData["t"] && !(bool)unpauseData["ct"]) {
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{pauseTeamName}{ChatColors.Default} has paused the match. Type .unpause to unpause the match");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{pauseTeamName}{ChatColors.Default} 暂停了比赛. 输入 .unpause 以继续比赛！");
                 }
             }
         }
@@ -174,15 +176,17 @@ namespace MatchZy
                 Log($"[StartKnifeRound] Starting Knife! Knife CFG not found in {absolutePath}, using default CFG!");
                 Server.ExecuteCommand("mp_ct_default_secondary \"\";mp_free_armor 1;mp_freezetime 10;mp_give_player_c4 0;mp_maxmoney 0;mp_respawn_immunitytime 0;mp_respawn_on_death_ct 0;mp_respawn_on_death_t 0;mp_roundtime 1.92;mp_roundtime_defuse 1.92;mp_roundtime_hostage 1.92;mp_t_default_secondary \"\";mp_round_restart_delay 3;mp_team_intro_time 0;mp_restartgame 1;mp_warmup_end;");
             }
-            
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}KNIFE!");
+            for(int i=0;i<4;i++){
+            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}开启刀局选边！！!");
+            }
         }
 
         private void SendSideSelectionMessage() {
             if (isSideSelectionPhase) {
-                Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{knifeWinnerName}{ChatColors.Default} Won the knife. Please type .stay/.switch");
+                Server.PrintToChatAll($"{chatPrefix} {ChatColors.Blue}{knifeWinnerName}{ChatColors.Default} 赢得了刀局！！");
+                Server.PrintToChatAll($"{chatPrefix} 请输入 {ChatColors.Red}.switch{ChatColors.Default} / {ChatColors.Green}.stay{ChatColors.Default} 来决定 交换阵营 / 保持队伍");
+                Server.PrintToChatAll($"{chatPrefix} 请输入 {ChatColors.Red}.switch{ChatColors.Default} / {ChatColors.Green}.stay{ChatColors.Default} 来决定 交换阵营 / 保持队伍");
+                Server.PrintToChatAll($"{chatPrefix} 请输入 {ChatColors.Red}.switch{ChatColors.Default} / {ChatColors.Green}.stay{ChatColors.Default} 来决定 交换阵营 / 保持队伍");
             }
         }
 
@@ -190,15 +194,15 @@ namespace MatchZy
             isWarmup = true;
             ExecWarmupCfg();
             knifeWinnerName = knifeWinner == 3 ? CT_TEAM_NAME : T_TEAM_NAME;
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{knifeWinnerName}{ChatColors.Default} Won the knife. Please type .stay/.switch");
+            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{knifeWinnerName}{ChatColors.Default} 轻松拿下了刀局！！ ");
+            Server.PrintToChatAll($"{chatPrefix} 有请{ChatColors.Green}{knifeWinnerName}{ChatColors.Default} 决定 交换阵营(.switch) / 保持队伍(.stay) ");
             if (sideSelectionMessageTimer == null) {
                 sideSelectionMessageTimer = AddTimer(defaultChatTimerDelay, SendSideSelectionMessage, TimerFlags.REPEAT);
             }
         }
 
         private void StartLive() {
-
-            // Setting match phases bools
+                // Setting match phases bools
             isWarmup = false;
             isSideSelectionPhase = false;
             matchStarted = true;
@@ -223,10 +227,9 @@ namespace MatchZy
             
             // This is to reload the map once it is over so that all flags are reset accordingly
             Server.ExecuteCommand("mp_match_end_restart true");
-            
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}LIVE!");
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}LIVE!");
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}LIVE!");
+            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Red}游戏已开始！{ChatColors.Default}可用{ChatColors.Green} .pause {ChatColors.Default}和{ChatColors.Green} .unpause {ChatColors.Default}以暂停和取消！");
+            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Red}游戏已开始！{ChatColors.Default}可用{ChatColors.Green} .pause {ChatColors.Default}和{ChatColors.Green} .unpause {ChatColors.Default}以暂停和取消！");
+            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Red}游戏已开始！{ChatColors.Default}可用{ChatColors.Green} .pause {ChatColors.Default}和{ChatColors.Green} .unpause {ChatColors.Default}以暂停和取消！");
         }
 
         private void KillPhaseTimers() {
@@ -404,7 +407,7 @@ namespace MatchZy
             if (Server.IsMapValid(mapName)) {
                 Server.ExecuteCommand($"changelevel \"{mapName}\"");
             } else {
-                player.PrintToChat($"{chatPrefix} Invalid map name!");
+                player.PrintToChat($"{chatPrefix} 无效的地图名！!");
             }
         }
 
@@ -446,6 +449,18 @@ namespace MatchZy
         }
 
         private void HandleMatchStart() {
+            for(int i=0;i<6;i++){
+            Server.PrintToChatAll($"{chatPrefix} 比赛将在{ChatColors.Green} 10 {ChatColors.Default}秒后开始！！!");
+            }
+            StartGameTimer = AddTimer(5, MessagebrforeStart10);
+        }
+        private void MessagebrforeStart10() {
+            for(int i=0;i<5;i++){
+            Server.PrintToChatAll($"{chatPrefix} 比赛将在{ChatColors.Red} 5 {ChatColors.Default}秒后开始！！!");
+            }
+            StartGame5Timer = AddTimer(5, StartLiveNow);
+        }
+        private void StartLiveNow() {
             isPractice = false;
 
             liveMatchId = database.InitMatch(CT_TEAM_NAME, T_TEAM_NAME, "-");
@@ -456,7 +471,7 @@ namespace MatchZy
             } else {
                 StartLive();
             }
-            Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}MatchZy{ChatColors.Default} Plugin by {ChatColors.Green}WD-{ChatColors.Default}");
+            // Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}MatchZy{ChatColors.Default} Plugin by {ChatColors.Green}WD-{ChatColors.Default}");
         }
 
         private void HandleMatchEnd() {
@@ -502,7 +517,7 @@ namespace MatchZy
         private void HandlePostRoundEndEvent(EventRoundEnd @event) {
             if (isMatchLive) {
                 (int ctScore, int tScore) = GetTeamsScore();
-                Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{CT_TEAM_NAME}: {ctScore}{ChatColors.Default} - {ChatColors.Green}{T_TEAM_NAME}: {tScore}");
+                Server.PrintToChatAll($"{chatPrefix} 比分：{ChatColors.Green}{CT_TEAM_NAME}: {ctScore}{ChatColors.Default} - {ChatColors.Green}{T_TEAM_NAME}: {tScore}");
                 database.UpdatePlayerStats(liveMatchId, CT_TEAM_NAME, T_TEAM_NAME, playerData);
                 string round = (ctScore + tScore).ToString("D2");
                 lastBackupFileName = $"matchzy_{liveMatchId}_round{round}.txt";
@@ -510,9 +525,9 @@ namespace MatchZy
 
                 // One of the team did not use .stop command hence display the proper message after the round has ended.
                 if (stopData["ct"] && !stopData["t"]) {
-                    Server.PrintToChatAll($"{chatPrefix} The round restore request by {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default} was cancelled as the round ended");
+                    Server.PrintToChatAll($"{chatPrefix} 回合回溯请求来自 {ChatColors.Green}{CT_TEAM_NAME}{ChatColors.Default} 在本轮比赛结束时被取消");
                 } else if (!stopData["ct"] && stopData["t"]) {
-                    Server.PrintToChatAll($"{chatPrefix} The round restore request by {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default} was cancelled as the round ended");
+                    Server.PrintToChatAll($"{chatPrefix} 回合回溯请求来自 {ChatColors.Green}{T_TEAM_NAME}{ChatColors.Default} 在本轮比赛结束时被取消");
                 }
 
                 // Invalidate .stop requests after a round is completed.
@@ -542,7 +557,7 @@ namespace MatchZy
             if (isMatchLive && !isPaused) {
                 if (IsPlayerAdmin(player)) {
                     unpauseData["pauseTeam"] = "Admin";
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}Admin{ChatColors.Default} has paused the match.");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}管理员{ChatColors.Default} 强制暂停了比赛！！");
                     if (player == null) {
                         Server.PrintToConsole($"[MatchZy] Admin has paused the match.");
                     } 
@@ -556,7 +571,7 @@ namespace MatchZy
                         pauseTeamName = CT_TEAM_NAME;
                         unpauseData["pauseTeam"] = CT_TEAM_NAME;
                     }          
-                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{pauseTeamName}{ChatColors.Default} has paused the match. Type .unpause to unpause the match");
+                    Server.PrintToChatAll($"{chatPrefix} {ChatColors.Green}{pauseTeamName}{ChatColors.Default} 暂停了比赛，如需取消请输入 !unpause 以继续");
                 }
 
                 Server.ExecuteCommand("mp_pause_match;");
@@ -573,7 +588,7 @@ namespace MatchZy
             if (matchStarted || !isPractice) return;
             ExecUnpracCommands();
             ResetMatch();
-            Server.PrintToChatAll($"{chatPrefix} Match mode loaded!");
+            Server.PrintToChatAll($"{chatPrefix} 比赛模式已启动！！！");
         }
 
         private void Log(string message) {
