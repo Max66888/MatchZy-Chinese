@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace MatchZy
 
         public override string ModuleDescription => "A plugin for running and managing CS2 practice/pugs/scrims/matches!";
 
-        public string chatPrefix = $"[{ChatColors.Green}MatchZy{ChatColors.Default}]";
+        public string chatPrefix = $"[{ChatColors.Green}Max小窝{ChatColors.Default}]";
 
         // Match phase data
         public bool isPractice = false;
@@ -65,8 +65,12 @@ namespace MatchZy
 
         // Timers
         public CounterStrikeSharp.API.Modules.Timers.Timer? unreadyPlayerMessageTimer = null;
+        public CounterStrikeSharp.API.Modules.Timers.Timer? SendRestartMessageTimer = null;
         public CounterStrikeSharp.API.Modules.Timers.Timer? sideSelectionMessageTimer = null;
         public CounterStrikeSharp.API.Modules.Timers.Timer? pausedStateTimer = null;
+        public CounterStrikeSharp.API.Modules.Timers.Timer? StartGameTimer = null;
+        public CounterStrikeSharp.API.Modules.Timers.Timer? StartGame5Timer = null;
+        
         public const int defaultChatTimerDelay = 12; // Each message is kept in chat display for ~13 seconds, hence setting default chat timer to 12 seconds.
 
         // Game Config
@@ -118,13 +122,27 @@ namespace MatchZy
                 { ".nobots", (player, commandInfo) => OnNoBotsCommand(player, commandInfo) },
                 { ".match", (player, commandInfo) => OnMatchCommand(player, commandInfo) },
                 { ".exitprac", (player, commandInfo) => OnMatchCommand(player, commandInfo) },
-                { ".stop", (player, commandInfo) => OnStopCommand(player, commandInfo) }
+                { ".stop", (player, commandInfo) => OnStopCommand(player, commandInfo) },
+                { "给老子重启", (player, commandInfo) => OnRestartMatchCommand(player, commandInfo) },
+                { "给老子开始", (player, commandInfo) => OnStartCommand(player, commandInfo) },
+                { "不准备", (player, commandInfo) => OnPlayerUnReady(player, commandInfo) },
+                { "老子就不准备", (player, commandInfo) => OnPlayerUnReady(player, commandInfo) },
+                { "准备", (player, commandInfo) => OnPlayerReady(player, commandInfo) },
+                { "zb", (player, commandInfo) => OnPlayerReady(player, commandInfo) },
+                { "准备就准备", (player, commandInfo) => OnPlayerReady(player, commandInfo) },           
+                { "老子要练习", (player, commandInfo) => OnPracCommand(player, commandInfo) },
+                { "练习", (player, commandInfo) => OnPracCommand(player, commandInfo) },
+                { "老子不练了", (player, commandInfo) => OnMatchCommand(player, commandInfo) },
+                { "老子就不换", (player, commandInfo) => OnTeamStay(player, commandInfo) },
+                { "老子要换边", (player, commandInfo) => OnTeamSwitch(player, commandInfo) },
+
+
             };
 
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) => {
                 Log($"[FULL CONNECT] Player ID: {@event.Userid.UserId}, Name: {@event.Userid.PlayerName} has connected!");
                 var player = @event.Userid;
-                player.PrintToChat($"{chatPrefix} Welcome to the server!");
+                player.PrintToChat($"{chatPrefix} 欢迎来到Crusader群U内战小窝━(*｀∀´*)ノ亻");
                 if (@event.Userid.UserId.HasValue) {
                     
                     playerData[@event.Userid.UserId.Value] = @event.Userid;
@@ -280,7 +298,7 @@ namespace MatchZy
                     string commandArg = originalMessage.Substring(command.Length).Trim();
 
                     if (IsPlayerAdmin(player) && commandArg != "") {
-                        Server.PrintToChatAll($"[{ChatColors.Red}ADMIN{ChatColors.Default}] {commandArg}");
+                        Server.PrintToChatAll($"[{ChatColors.Red}管理员{ChatColors.Default}] {commandArg}");
                     }
                 }
                 if (message.StartsWith(".spawn")) {
